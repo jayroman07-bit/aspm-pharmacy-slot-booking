@@ -5,138 +5,122 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ASPM College of Pharmacy - Slot Booking</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  color:#222;
 }
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f7fb;
-  color: #222;
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:20px;
 }
-
-.header {
-  background: #0b5d3b;
-  color: white;
-  text-align: center;
-  padding: 25px 15px;
+.header{
+  background:#174ea6;
+  color:white;
+  padding:20px;
+  text-align:center;
+  border-radius:0 0 15px 15px;
 }
-
-.header h1 {
-  margin: 0;
-  font-size: 24px;
+.header h2{margin:0 0 8px;font-size:22px}
+.header p{margin:0;font-size:15px}
+.card{
+  background:white;
+  margin-top:20px;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.1);
 }
-
-.header p {
-  margin: 8px 0 0;
-  font-size: 16px;
+label{
+  display:block;
+  font-weight:bold;
+  margin-top:15px;
+  margin-bottom:6px;
 }
-
-.container {
-  max-width: 600px;
-  margin: 25px auto;
-  padding: 15px;
+input,select{
+  width:100%;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
 }
-
-.card {
-  background: white;
-  padding: 22px;
-  border-radius: 14px;
-  box-shadow: 0 3px 15px rgba(0,0,0,0.10);
+.slots{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-top:10px;
 }
-
-h2 {
-  text-align: center;
-  color: #0b5d3b;
+.slot{
+  padding:12px;
+  border:1px solid #174ea6;
+  background:white;
+  color:#174ea6;
+  border-radius:8px;
+  font-size:16px;
 }
-
-label {
-  display: block;
-  margin-top: 15px;
-  font-weight: bold;
+.slot.booked{
+  background:#ddd;
+  color:#777;
+  border-color:#bbb;
+  text-decoration:line-through;
 }
-
-input, select {
-  width: 100%;
-  padding: 13px;
-  margin-top: 7px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
+.slot.selected{
+  background:#174ea6;
+  color:white;
 }
-
-.slots {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
+button{
+  cursor:pointer;
 }
-
-.slot {
-  padding: 13px;
-  border: 2px solid #0b5d3b;
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  background: #fff;
-  color: #0b5d3b;
-  font-weight: bold;
+#confirmBtn{
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  border:0;
+  border-radius:8px;
+  background:#198754;
+  color:white;
+  font-size:17px;
+  font-weight:bold;
 }
-
-.slot:hover {
-  background: #e8f5ee;
+#confirmBtn:disabled{
+  background:#aaa;
 }
-
-.slot.selected {
-  background: #0b5d3b;
-  color: white;
+#message{
+  margin-top:15px;
+  padding:12px;
+  border-radius:8px;
+  display:none;
 }
-
-button {
-  width: 100%;
-  padding: 15px;
-  margin-top: 25px;
-  border: none;
-  border-radius: 8px;
-  background: #0b5d3b;
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
+.success{
+  background:#d1e7dd;
+  color:#0f5132;
 }
-
-button:hover {
-  background: #08472e;
+.error{
+  background:#f8d7da;
+  color:#842029;
 }
-
-.note {
-  background: #fff8df;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 15px;
-  font-size: 14px;
+#whatsappBtn{
+  display:none;
+  width:100%;
+  margin-top:12px;
+  padding:14px;
+  background:#25D366;
+  color:white;
+  text-align:center;
+  text-decoration:none;
+  border-radius:8px;
+  font-weight:bold;
 }
-
-.success {
-  display: none;
-  margin-top: 20px;
-  padding: 18px;
-  background: #e7f7ed;
-  border-radius: 10px;
-  border: 1px solid #80c99b;
-}
-
-.success h3 {
-  color: #08743f;
-}
-
-.footer {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-  font-size: 13px;
+.note{
+  margin-top:15px;
+  font-size:13px;
+  color:#666;
+  text-align:center;
 }
 </style>
 </head>
@@ -144,162 +128,273 @@ button:hover {
 <body>
 
 <div class="header">
-  <h1>ASPM COLLEGE OF PHARMACY</h1>
+  <h2>ASPM COLLEGE OF PHARMACY</h2>
   <p>Sangulwadi</p>
 </div>
 
 <div class="container">
-
 <div class="card">
 
-<h2>B.Pharm Passout Students</h2>
-
-<p style="text-align:center;">
-  Documents Collection – Slot Booking
-</p>
+<h3>B.Pharm Passout Students</h3>
+<p><b>Documents Collection – Slot Booking</b></p>
 
 <label>Student Name</label>
-<input type="text" id="studentName" placeholder="Enter your full name">
+<input type="text" id="studentName" placeholder="Enter full name">
 
 <label>Mobile Number</label>
-<input type="tel" id="mobile" placeholder="Enter mobile number">
+<input type="tel" id="mobile" placeholder="10 digit mobile number" maxlength="10">
 
 <label>PRN / Seat Number</label>
 <input type="text" id="prn" placeholder="Enter PRN / Seat Number">
 
 <label>Passing Year</label>
-<select id="year">
-  <option value="">Select Passing Year</option>
-  <option>2026</option>
-  <option>2025</option>
-  <option>2024</option>
-  <option>2023</option>
-  <option>2022</option>
-  <option>2021</option>
-</select>
+<input type="text" id="passingYear" placeholder="e.g. 2026">
 
 <label>Select Date</label>
-<input type="date" id="date">
+<input type="date" id="bookingDate"
+       min="2026-09-07"
+       max="2026-09-11">
 
-<label>Select Available Slot</label>
+<label>Select Time Slot</label>
+<div class="slots" id="slots"></div>
 
-<div class="slots">
+<button id="confirmBtn" disabled>Confirm Booking</button>
 
-<div class="slot" onclick="selectSlot(this,'10:00 AM')">10:00 AM</div>
-<div class="slot" onclick="selectSlot(this,'10:15 AM')">10:15 AM</div>
+<div id="message"></div>
 
-<div class="slot" onclick="selectSlot(this,'10:30 AM')">10:30 AM</div>
-<div class="slot" onclick="selectSlot(this,'10:45 AM')">10:45 AM</div>
-
-<div class="slot" onclick="selectSlot(this,'11:00 AM')">11:00 AM</div>
-<div class="slot" onclick="selectSlot(this,'11:15 AM')">11:15 AM</div>
-
-<div class="slot" onclick="selectSlot(this,'11:30 AM')">11:30 AM</div>
-<div class="slot" onclick="selectSlot(this,'11:45 AM')">11:45 AM</div>
-
-<div class="slot" onclick="selectSlot(this,'12:00 PM')">12:00 PM</div>
-<div class="slot" onclick="selectSlot(this,'12:15 PM')">12:15 PM</div>
-
-</div>
+<a id="whatsappBtn" target="_blank">
+  📱 Send Confirmation on WhatsApp
+</a>
 
 <div class="note">
-<strong>Note:</strong> प्रत्येक विद्यार्थ्याला फक्त एकच slot book करता येईल.
-कृपया आपल्या allotted time च्या 10 मिनिटे आधी कॉलेजमध्ये उपस्थित राहावे.
-</div>
-
-<button onclick="bookSlot()">CONFIRM BOOKING</button>
-
-<div class="success" id="success">
-<h3>✅ Booking Successful</h3>
-<p><strong>Booking ID:</strong> <span id="bookingId"></span></p>
-<p><strong>Student:</strong> <span id="showName"></span></p>
-<p><strong>Date:</strong> <span id="showDate"></span></p>
-<p><strong>Time:</strong> <span id="showTime"></span></p>
-
-<button onclick="whatsappConfirmation()">
-📲 SEND CONFIRMATION ON WHATSAPP
-</button>
+  Booking dates: 07 September 2026 to 11 September 2026<br>
+  10 students per day | 15 minute slots
 </div>
 
 </div>
-
-</div>
-
-<div class="footer">
-ASPM College of Pharmacy, Sangulwadi
 </div>
 
 <script>
 
-let selectedSlot = "";
+const SUPABASE_URL = "https://zhrtsnnxbwrdplehvobi.supabase.co";
 
-function selectSlot(element, time) {
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_IKTxetJxdv-4qHEVID3FxQ_hMTJ7dP4";
 
-  document.querySelectorAll(".slot").forEach(function(slot) {
-    slot.classList.remove("selected");
-  });
-
-  element.classList.add("selected");
-
-  selectedSlot = time;
-}
-
-function bookSlot() {
-
-  let name = document.getElementById("studentName").value.trim();
-  let mobile = document.getElementById("mobile").value.trim();
-  let prn = document.getElementById("prn").value.trim();
-  let year = document.getElementById("year").value;
-  let date = document.getElementById("date").value;
-
-  if (!name || !mobile || !prn || !year || !date || !selectedSlot) {
-    alert("कृपया सर्व माहिती भरून Slot निवडा.");
-    return;
-  }
-
-  if (mobile.length != 10) {
-    alert("कृपया 10 अंकी Mobile Number टाका.");
-    return;
-  }
-
-  let bookingId =
-    "ASPM-BP-" +
-    Math.floor(1000 + Math.random() * 9000);
-
-  document.getElementById("bookingId").innerText = bookingId;
-  document.getElementById("showName").innerText = name;
-  document.getElementById("showDate").innerText = date;
-  document.getElementById("showTime").innerText = selectedSlot;
-
-  document.getElementById("success").style.display = "block";
-
-  window.scrollTo({
-    top: document.body.scrollHeight,
-    behavior: "smooth"
-  });
-}
-
-function whatsappConfirmation() {
-
-  let name = document.getElementById("studentName").value;
-  let mobile = document.getElementById("mobile").value;
-  let date = document.getElementById("date").value;
-  let bookingId = document.getElementById("bookingId").innerText;
-
-  let message =
-    "ASPM College of Pharmacy%0A%0A" +
-    "B.Pharm Passout Students - Documents Collection%0A%0A" +
-    "Booking Confirmed ✅%0A%0A" +
-    "Student: " + name + "%0A" +
-    "Date: " + date + "%0A" +
-    "Time: " + selectedSlot + "%0A" +
-    "Booking ID: " + bookingId;
-
-  window.open(
-    "https://wa.me/91" + mobile + "?text=" + message,
-    "_blank"
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
   );
+
+const slotsList = [
+  "10:00",
+  "10:15",
+  "10:30",
+  "10:45",
+  "11:00",
+  "11:15",
+  "11:30",
+  "11:45",
+  "12:00",
+  "12:15"
+];
+
+const dateInput = document.getElementById("bookingDate");
+const slotsDiv = document.getElementById("slots");
+const confirmBtn = document.getElementById("confirmBtn");
+const message = document.getElementById("message");
+const whatsappBtn = document.getElementById("whatsappBtn");
+
+let selectedSlot = null;
+
+function showMessage(text,type){
+  message.style.display="block";
+  message.className=type;
+  message.innerHTML=text;
 }
+
+function clearMessage(){
+  message.style.display="none";
+  whatsappBtn.style.display="none";
+}
+
+function renderSlots(booked=[]){
+
+  slotsDiv.innerHTML="";
+  selectedSlot=null;
+  confirmBtn.disabled=true;
+
+  slotsList.forEach(slot => {
+
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="slot";
+    btn.textContent=slot;
+
+    if(booked.includes(slot)){
+      btn.classList.add("booked");
+      btn.disabled=true;
+      btn.textContent=slot+" - BOOKED";
+    }else{
+
+      btn.onclick=()=>{
+
+        document.querySelectorAll(".slot")
+          .forEach(x=>x.classList.remove("selected"));
+
+        btn.classList.add("selected");
+        selectedSlot=slot;
+        confirmBtn.disabled=false;
+      };
+    }
+
+    slotsDiv.appendChild(btn);
+  });
+}
+
+async function loadSlots(){
+
+  clearMessage();
+  renderSlots([]);
+
+  const date=dateInput.value;
+
+  if(!date) return;
+
+  const day=new Date(date+"T00:00:00").getDay();
+
+  if(day===0 || day===6){
+    showMessage("Please select Monday to Friday only.","error");
+    return;
+  }
+
+  const {data,error}=await supabaseClient
+    .rpc("get_booked_slots",{p_date:date});
+
+  if(error){
+    console.error(error);
+    showMessage("Unable to load slots. Please try again.","error");
+    return;
+  }
+
+  const booked=(data || []).map(x =>
+    String(x.slot_time).substring(0,5)
+  );
+
+  renderSlots(booked);
+}
+
+dateInput.addEventListener("change",loadSlots);
+
+confirmBtn.addEventListener("click",async()=>{
+
+  clearMessage();
+
+  const studentName=
+    document.getElementById("studentName").value.trim();
+
+  const mobile=
+    document.getElementById("mobile").value.trim();
+
+  const prn=
+    document.getElementById("prn").value.trim();
+
+  const passingYear=
+    document.getElementById("passingYear").value.trim();
+
+  const bookingDate=dateInput.value;
+
+  if(!studentName || !mobile || !prn ||
+     !passingYear || !bookingDate || !selectedSlot){
+
+    showMessage("Please fill all details and select a slot.","error");
+    return;
+  }
+
+  if(!/^[0-9]{10}$/.test(mobile)){
+    showMessage("Please enter a valid 10 digit mobile number.","error");
+    return;
+  }
+
+  confirmBtn.disabled=true;
+  confirmBtn.textContent="Booking...";
+
+  const {data,error}=await supabaseClient
+    .rpc("book_slot",{
+      p_student_name:studentName,
+      p_mobile:mobile,
+      p_prn:prn,
+      p_passing_year:passingYear,
+      p_booking_date:bookingDate,
+      p_slot_time:selectedSlot
+    });
+
+  if(error){
+
+    console.error(error);
+
+    const errText=(error.message || "").toLowerCase();
+
+    if(errText.includes("unique") ||
+       errText.includes("duplicate") ||
+       errText.includes("slot")){
+
+      showMessage(
+        "This slot or PRN is already booked. Please select another slot.",
+        "error"
+      );
+
+    }else{
+
+      showMessage(
+        "Booking failed. Please check your details and try again.",
+        "error"
+      );
+    }
+
+    confirmBtn.disabled=false;
+    confirmBtn.textContent="Confirm Booking";
+    await loadSlots();
+    return;
+  }
+
+  const bookingId =
+    Array.isArray(data) ? data[0]?.book_slot : data;
+
+  showMessage(
+    "<b>Booking Successful! ✅</b><br><br>" +
+    "Booking ID: <b>"+bookingId+"</b><br>" +
+    "Date: "+bookingDate+"<br>" +
+    "Time: "+selectedSlot,
+    "success"
+  );
+
+  let waMobile=mobile;
+
+  if(waMobile.length===10){
+    waMobile="91"+waMobile;
+  }
+
+  const waText =
+    "ASPM COLLEGE OF PHARMACY - Document Collection Booking%0A%0A" +
+    "Student Name: "+encodeURIComponent(studentName)+"%0A" +
+    "PRN: "+encodeURIComponent(prn)+"%0A" +
+    "Date: "+bookingDate+"%0A" +
+    "Time: "+selectedSlot+"%0A" +
+    "Booking ID: "+encodeURIComponent(bookingId);
+
+  whatsappBtn.href="https://wa.me/"+waMobile+"?text="+waText;
+  whatsappBtn.style.display="block";
+
+  confirmBtn.textContent="Booking Completed";
+  selectedSlot=null;
+
+  await loadSlots();
+
+});
+
+renderSlots([]);
 
 </script>
 
