@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASPM College of Pharmacy - Slot Booking</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  color: #222;
+}
+
+.header {
+  background: #0b5d3b;
+  color: white;
+  text-align: center;
+  padding: 25px 15px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header p {
+  margin: 8px 0 0;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 25px auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.10);
+}
+
+h2 {
+  text-align: center;
+  color: #0b5d3b;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+input, select {
+  width: 100%;
+  padding: 13px;
+  margin-top: 7px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.slot {
+  padding: 13px;
+  border: 2px solid #0b5d3b;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+  color: #0b5d3b;
+  font-weight: bold;
+}
+
+.slot:hover {
+  background: #e8f5ee;
+}
+
+.slot.selected {
+  background: #0b5d3b;
+  color: white;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 25px;
+  border: none;
+  border-radius: 8px;
+  background: #0b5d3b;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #08472e;
+}
+
+.note {
+  background: #fff8df;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.success {
+  display: none;
+  margin-top: 20px;
+  padding: 18px;
+  background: #e7f7ed;
+  border-radius: 10px;
+  border: 1px solid #80c99b;
+}
+
+.success h3 {
+  color: #08743f;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>ASPM COLLEGE OF PHARMACY</h1>
+  <p>Sangulwadi</p>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h2>B.Pharm Passout Students</h2>
+
+<p style="text-align:center;">
+  Documents Collection – Slot Booking
+</p>
+
+<label>Student Name</label>
+<input type="text" id="studentName" placeholder="Enter your full name">
+
+<label>Mobile Number</label>
+<input type="tel" id="mobile" placeholder="Enter mobile number">
+
+<label>PRN / Seat Number</label>
+<input type="text" id="prn" placeholder="Enter PRN / Seat Number">
+
+<label>Passing Year</label>
+<select id="year">
+  <option value="">Select Passing Year</option>
+  <option>2026</option>
+  <option>2025</option>
+  <option>2024</option>
+  <option>2023</option>
+  <option>2022</option>
+  <option>2021</option>
+</select>
+
+<label>Select Date</label>
+<input type="date" id="date">
+
+<label>Select Available Slot</label>
+
+<div class="slots">
+
+<div class="slot" onclick="selectSlot(this,'10:00 AM')">10:00 AM</div>
+<div class="slot" onclick="selectSlot(this,'10:15 AM')">10:15 AM</div>
+
+<div class="slot" onclick="selectSlot(this,'10:30 AM')">10:30 AM</div>
+<div class="slot" onclick="selectSlot(this,'10:45 AM')">10:45 AM</div>
+
+<div class="slot" onclick="selectSlot(this,'11:00 AM')">11:00 AM</div>
+<div class="slot" onclick="selectSlot(this,'11:15 AM')">11:15 AM</div>
+
+<div class="slot" onclick="selectSlot(this,'11:30 AM')">11:30 AM</div>
+<div class="slot" onclick="selectSlot(this,'11:45 AM')">11:45 AM</div>
+
+<div class="slot" onclick="selectSlot(this,'12:00 PM')">12:00 PM</div>
+<div class="slot" onclick="selectSlot(this,'12:15 PM')">12:15 PM</div>
+
+</div>
+
+<div class="note">
+<strong>Note:</strong> प्रत्येक विद्यार्थ्याला फक्त एकच slot book करता येईल.
+कृपया आपल्या allotted time च्या 10 मिनिटे आधी कॉलेजमध्ये उपस्थित राहावे.
+</div>
+
+<button onclick="bookSlot()">CONFIRM BOOKING</button>
+
+<div class="success" id="success">
+<h3>✅ Booking Successful</h3>
+<p><strong>Booking ID:</strong> <span id="bookingId"></span></p>
+<p><strong>Student:</strong> <span id="showName"></span></p>
+<p><strong>Date:</strong> <span id="showDate"></span></p>
+<p><strong>Time:</strong> <span id="showTime"></span></p>
+
+<button onclick="whatsappConfirmation()">
+📲 SEND CONFIRMATION ON WHATSAPP
+</button>
+</div>
+
+</div>
+
+</div>
+
+<div class="footer">
+ASPM College of Pharmacy, Sangulwadi
+</div>
+
+<script>
+
+let selectedSlot = "";
+
+function selectSlot(element, time) {
+
+  document.querySelectorAll(".slot").forEach(function(slot) {
+    slot.classList.remove("selected");
+  });
+
+  element.classList.add("selected");
+
+  selectedSlot = time;
+}
+
+function bookSlot() {
+
+  let name = document.getElementById("studentName").value.trim();
+  let mobile = document.getElementById("mobile").value.trim();
+  let prn = document.getElementById("prn").value.trim();
+  let year = document.getElementById("year").value;
+  let date = document.getElementById("date").value;
+
+  if (!name || !mobile || !prn || !year || !date || !selectedSlot) {
+    alert("कृपया सर्व माहिती भरून Slot निवडा.");
+    return;
+  }
+
+  if (mobile.length != 10) {
+    alert("कृपया 10 अंकी Mobile Number टाका.");
+    return;
+  }
+
+  let bookingId =
+    "ASPM-BP-" +
+    Math.floor(1000 + Math.random() * 9000);
+
+  document.getElementById("bookingId").innerText = bookingId;
+  document.getElementById("showName").innerText = name;
+  document.getElementById("showDate").innerText = date;
+  document.getElementById("showTime").innerText = selectedSlot;
+
+  document.getElementById("success").style.display = "block";
+
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth"
+  });
+}
+
+function whatsappConfirmation() {
+
+  let name = document.getElementById("studentName").value;
+  let mobile = document.getElementById("mobile").value;
+  let date = document.getElementById("date").value;
+  let bookingId = document.getElementById("bookingId").innerText;
+
+  let message =
+    "ASPM College of Pharmacy%0A%0A" +
+    "B.Pharm Passout Students - Documents Collection%0A%0A" +
+    "Booking Confirmed ✅%0A%0A" +
+    "Student: " + name + "%0A" +
+    "Date: " + date + "%0A" +
+    "Time: " + selectedSlot + "%0A" +
+    "Booking ID: " + bookingId;
+
+  window.open(
+    "https://wa.me/91" + mobile + "?text=" + message,
+    "_blank"
+  );
+}
+
+</script>
+
+</body>
+</html>
