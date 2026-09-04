@@ -23,7 +23,7 @@ th{background:#1557a6;color:white}
 .filters{display:flex;gap:15px;align-items:end;margin-bottom:15px}
 .filters div{flex:1}.count{font-size:18px;font-weight:bold;margin:15px 0}
 @media(max-width:700px){.filters{display:block}}
-</style>
+@media(max-width:800px){#summaryGrid{grid-template-columns:repeat(2,1fr)!important}}\n</style>
 </head>
 <body>
 <div class="header">ASPM COLLEGE OF PHARMACY<br>Admin Booking Dashboard</div>
@@ -40,6 +40,12 @@ th{background:#1557a6;color:white}
 </div>
 
 <div id="dashboard" class="card hidden">
+<div id="summaryCard" class="card">
+  <h2>Booking Summary</h2>
+  <p><b>Booking dates: 07 September 2026 to 11 September 2026</b></p>
+  <div id="summaryGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px"></div>
+</div>
+
 <button class="logout-btn" onclick="logout()">Logout</button>
 <h2>Booking Dashboard</h2>
 <div class="filters">
