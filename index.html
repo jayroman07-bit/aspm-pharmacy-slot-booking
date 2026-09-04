@@ -4,399 +4,185 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ASPM College of Pharmacy - Slot Booking</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f4f7fb;
-  color:#222;
-}
-.container{
-  max-width:600px;
-  margin:auto;
-  padding:20px;
-}
-.header{
-  background:#174ea6;
-  color:white;
-  padding:20px;
-  text-align:center;
-  border-radius:0 0 15px 15px;
-}
-.header h2{margin:0 0 8px;font-size:22px}
-.header p{margin:0;font-size:15px}
-.card{
-  background:white;
-  margin-top:20px;
-  padding:20px;
-  border-radius:15px;
-  box-shadow:0 3px 12px rgba(0,0,0,.1);
-}
-label{
-  display:block;
-  font-weight:bold;
-  margin-top:15px;
-  margin-bottom:6px;
-}
-input,select{
-  width:100%;
-  padding:12px;
-  border:1px solid #ccc;
-  border-radius:8px;
-  font-size:16px;
-}
-.slots{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  margin-top:10px;
-}
-.slot{
-  padding:12px;
-  border:1px solid #174ea6;
-  background:white;
-  color:#174ea6;
-  border-radius:8px;
-  font-size:16px;
-}
-.slot.booked{
-  background:#ddd;
-  color:#777;
-  border-color:#bbb;
-  text-decoration:line-through;
-}
-.slot.selected{
-  background:#174ea6;
-  color:white;
-}
-button{
-  cursor:pointer;
-}
-#confirmBtn{
-  width:100%;
-  margin-top:20px;
-  padding:14px;
-  border:0;
-  border-radius:8px;
-  background:#198754;
-  color:white;
-  font-size:17px;
-  font-weight:bold;
-}
-#confirmBtn:disabled{
-  background:#aaa;
-}
-#message{
-  margin-top:15px;
-  padding:12px;
-  border-radius:8px;
-  display:none;
-}
-.success{
-  background:#d1e7dd;
-  color:#0f5132;
-}
-.error{
-  background:#f8d7da;
-  color:#842029;
-}
-#whatsappBtn{
-  display:none;
-  width:100%;
-  margin-top:12px;
-  padding:14px;
-  background:#25D366;
-  color:white;
-  text-align:center;
-  text-decoration:none;
-  border-radius:8px;
-  font-weight:bold;
-}
-.note{
-  margin-top:15px;
-  font-size:13px;
-  color:#666;
-  text-align:center;
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#222}
+.container{max-width:600px;margin:auto;padding:20px}
+.header{background:#174ea6;color:white;padding:20px;text-align:center;border-radius:0 0 15px 15px}
+.header h2{margin:0 0 8px;font-size:22px}.header p{margin:0;font-size:15px}
+.card{background:white;margin-top:20px;padding:20px;border-radius:15px;box-shadow:0 3px 12px rgba(0,0,0,.1)}
+label{display:block;font-weight:bold;margin-top:15px;margin-bottom:6px}
+input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+.slots{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.slot{padding:12px;border:1px solid #174ea6;background:white;color:#174ea6;border-radius:8px;font-size:16px}
+.slot.booked{background:#ddd;color:#777;border-color:#bbb;text-decoration:line-through}
+.slot.selected{background:#174ea6;color:white}
+button{cursor:pointer}
+#confirmBtn{width:100%;margin-top:20px;padding:14px;border:0;border-radius:8px;background:#198754;color:white;font-size:17px;font-weight:bold}
+#confirmBtn:disabled{background:#aaa}
+#message{margin-top:15px;padding:12px;border-radius:8px;display:none}
+.success{background:#d1e7dd;color:#0f5132}.error{background:#f8d7da;color:#842029}
+#acknowledgement{display:none;margin-top:20px;border:2px solid #198754;border-radius:12px;padding:18px;background:#fff}
+#acknowledgement h2{text-align:center;color:#198754;margin:0 0 15px}
+.ack-row{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #eee;padding:9px 0}
+.ack-row b:first-child{color:#555}.ack-note{text-align:center;margin-top:15px;font-size:13px;color:#666}
+.ack-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+#whatsappBtn,#printBtn{width:100%;padding:13px;text-align:center;text-decoration:none;border:0;border-radius:8px;font-weight:bold;font-size:15px}
+#whatsappBtn{background:#25D366;color:white}#printBtn{background:#174ea6;color:white}
+.note{margin-top:15px;font-size:13px;color:#666;text-align:center}
+@media(max-width:450px){.ack-row{display:block}.ack-row b:last-child{display:block;margin-top:3px}.ack-buttons{grid-template-columns:1fr}}
+@media print{
+ body{background:white}.header,.container> .card > h3,.container> .card > p,#studentName,#mobile,#prn,#passingYear,#bookingDate,.slots,#confirmBtn,#message,.note{display:none!important}
+ .card{box-shadow:none;margin:0;padding:0}
+ #acknowledgement{display:block!important;border:2px solid #000}
+ #acknowledgement h2{color:#000}
+ #whatsappBtn,#printBtn{display:none!important}
 }
 </style>
 </head>
-
 <body>
-
-<div class="header">
-  <h2>ASPM COLLEGE OF PHARMACY</h2>
-  <p>Sangulwadi</p>
-</div>
-
+<div class="header"><h2>ASPM COLLEGE OF PHARMACY</h2><p>Sangulwadi</p></div>
 <div class="container">
 <div class="card">
-
 <h3>B.Pharm Passout Students</h3>
 <p><b>Documents Collection – Slot Booking</b></p>
 
 <label>Student Name</label>
 <input type="text" id="studentName" placeholder="Enter full name">
-
 <label>Mobile Number</label>
 <input type="tel" id="mobile" placeholder="10 digit mobile number" maxlength="10">
-
 <label>PRN / Seat Number</label>
 <input type="text" id="prn" placeholder="Enter PRN / Seat Number">
-
 <label>Passing Year</label>
 <input type="text" id="passingYear" placeholder="e.g. 2026">
-
 <label>Select Date</label>
-<input type="date" id="bookingDate"
-       min="2026-09-07"
-       max="2026-09-11">
-
+<input type="date" id="bookingDate" min="2026-09-07" max="2026-09-11">
 <label>Select Time Slot</label>
 <div class="slots" id="slots"></div>
 
 <button id="confirmBtn" disabled>Confirm Booking</button>
-
 <div id="message"></div>
 
-<a id="whatsappBtn" target="_blank">
-  📱 Send Confirmation on WhatsApp
-</a>
-
-<div class="note">
-  Booking dates: 07 September 2026 to 11 September 2026<br>
-  10 students per day | 15 minute slots
+<div id="acknowledgement">
+<h2>✅ BOOKING CONFIRMED</h2>
+<div class="ack-row"><b>Student Name</b><b id="ackName"></b></div>
+<div class="ack-row"><b>PRN / Seat No.</b><b id="ackPrn"></b></div>
+<div class="ack-row"><b>Mobile Number</b><b id="ackMobile"></b></div>
+<div class="ack-row"><b>Passing Year</b><b id="ackYear"></b></div>
+<div class="ack-row"><b>Booking Date</b><b id="ackDate"></b></div>
+<div class="ack-row"><b>Time Slot</b><b id="ackTime"></b></div>
+<div class="ack-row"><b>Booking ID</b><b id="ackId"></b></div>
+<div class="ack-note">Please keep this acknowledgement for your record.</div>
+<div class="ack-buttons">
+<a id="whatsappBtn" target="_blank">📱 WhatsApp Confirmation</a>
+<button id="printBtn" type="button">🖨️ Print Acknowledgement</button>
+</div>
 </div>
 
+<div class="note">
+Booking dates: 07 September 2026 to 11 September 2026<br>
+07–09 Sep: 6 students per day | 10–11 Sep: 10 students per day | 15 minute slots
+</div>
 </div>
 </div>
 
 <script>
+const SUPABASE_URL="https://zhrtsnnxbwrdplehvobi.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_IKTxetJxdv-4qHEVID3FxQ_hMTJ7dP4";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 
-const SUPABASE_URL = "https://zhrtsnnxbwrdplehvobi.supabase.co";
+const dateInput=document.getElementById("bookingDate");
+const slotsDiv=document.getElementById("slots");
+const confirmBtn=document.getElementById("confirmBtn");
+const message=document.getElementById("message");
+const acknowledgement=document.getElementById("acknowledgement");
+const whatsappBtn=document.getElementById("whatsappBtn");
+const printBtn=document.getElementById("printBtn");
 
-const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_IKTxetJxdv-4qHEVID3FxQ_hMTJ7dP4";
+const shortSlots=["10:00","10:15","10:30","10:45","11:00","11:15"];
+const longSlots=[...shortSlots,"11:30","11:45","12:00","12:15"];
+let selectedSlot=null;
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-
-const slotsList = [
-  "10:00",
-  "10:15",
-  "10:30",
-  "10:45",
-  "11:00",
-  "11:15",
-  "11:30",
-  "11:45",
-  "12:00",
-  "12:15"
-];
-
-const dateInput = document.getElementById("bookingDate");
-const slotsDiv = document.getElementById("slots");
-const confirmBtn = document.getElementById("confirmBtn");
-const message = document.getElementById("message");
-const whatsappBtn = document.getElementById("whatsappBtn");
-
-let selectedSlot = null;
-
-function showMessage(text,type){
-  message.style.display="block";
-  message.className=type;
-  message.innerHTML=text;
+function getSlotsForDate(date){
+ return ["2026-09-07","2026-09-08","2026-09-09"].includes(date)?shortSlots:longSlots;
 }
-
-function clearMessage(){
-  message.style.display="none";
-  whatsappBtn.style.display="none";
-}
-
+function showMessage(text,type){message.style.display="block";message.className=type;message.innerHTML=text}
+function clearMessage(){message.style.display="none";message.innerHTML=""}
 function renderSlots(booked=[]){
-
-  slotsDiv.innerHTML="";
-  selectedSlot=null;
-  confirmBtn.disabled=true;
-
-  slotsList.forEach(slot => {
-
-    const btn=document.createElement("button");
-    btn.type="button";
-    btn.className="slot";
-    btn.textContent=slot;
-
-    if(booked.includes(slot)){
-      btn.classList.add("booked");
-      btn.disabled=true;
-      btn.textContent=slot+" - BOOKED";
-    }else{
-
-      btn.onclick=()=>{
-
-        document.querySelectorAll(".slot")
-          .forEach(x=>x.classList.remove("selected"));
-
-        btn.classList.add("selected");
-        selectedSlot=slot;
-        confirmBtn.disabled=false;
-      };
-    }
-
-    slotsDiv.appendChild(btn);
-  });
+ slotsDiv.innerHTML="";selectedSlot=null;confirmBtn.disabled=true;
+ getSlotsForDate(dateInput.value).forEach(slot=>{
+  const btn=document.createElement("button");btn.type="button";btn.className="slot";btn.textContent=slot;
+  if(booked.includes(slot)){btn.classList.add("booked");btn.disabled=true;btn.textContent=slot+" - BOOKED";}
+  else{btn.onclick=()=>{document.querySelectorAll(".slot").forEach(x=>x.classList.remove("selected"));btn.classList.add("selected");selectedSlot=slot;confirmBtn.disabled=false}}
+  slotsDiv.appendChild(btn);
+ });
 }
-
 async function loadSlots(){
-
-  clearMessage();
-  renderSlots([]);
-
-  const date=dateInput.value;
-
-  if(!date) return;
-
-  const day=new Date(date+"T00:00:00").getDay();
-
-  if(day===0 || day===6){
-    showMessage("Please select Monday to Friday only.","error");
-    return;
-  }
-
-  const {data,error}=await supabaseClient
-    .rpc("get_booked_slots",{p_date:date});
-
-  if(error){
-    console.error(error);
-    showMessage("Unable to load slots. Please try again.","error");
-    return;
-  }
-
-  const booked=(data || []).map(x =>
-    String(x.slot_time).substring(0,5)
-  );
-
-  renderSlots(booked);
+ clearMessage();acknowledgement.style.display="none";renderSlots([]);
+ const date=dateInput.value;if(!date)return;
+ const day=new Date(date+"T00:00:00").getDay();
+ if(day===0||day===6){showMessage("Please select Monday to Friday only.","error");return}
+ const {data,error}=await supabaseClient.rpc("get_booked_slots",{p_date:date});
+ if(error){console.error(error);showMessage("Unable to load slots. Please try again.","error");return}
+ const booked=(data||[]).map(x=>String(x.slot_time).substring(0,5));
+ renderSlots(booked);
 }
-
 dateInput.addEventListener("change",loadSlots);
 
 confirmBtn.addEventListener("click",async()=>{
+ clearMessage();
+ const studentName=document.getElementById("studentName").value.trim();
+ const mobile=document.getElementById("mobile").value.trim();
+ const prn=document.getElementById("prn").value.trim();
+ const passingYear=document.getElementById("passingYear").value.trim();
+ const bookingDate=dateInput.value;
+ if(!studentName||!mobile||!prn||!passingYear||!bookingDate||!selectedSlot){showMessage("Please fill all details and select a slot.","error");return}
+ if(!/^[0-9]{10}$/.test(mobile)){showMessage("Please enter a valid 10 digit mobile number.","error");return}
+ confirmBtn.disabled=true;confirmBtn.textContent="Booking...";
+ const bookedSlotAtSubmit=selectedSlot;
+ const {data,error}=await supabaseClient.rpc("book_slot",{
+  p_student_name:studentName,p_mobile:mobile,p_prn:prn,p_passing_year:passingYear,
+  p_booking_date:bookingDate,p_slot_time:bookedSlotAtSubmit
+ });
+ if(error){
+  console.error(error);const errText=(error.message||"").toLowerCase();
+  if(errText.includes("unique")||errText.includes("duplicate")||errText.includes("slot")||errText.includes("prn"))
+   showMessage("This slot or PRN is already booked. Please select another slot.","error");
+  else showMessage("Booking failed. Please check your details and try again.","error");
+  confirmBtn.disabled=false;confirmBtn.textContent="Confirm Booking";await loadSlots();return;
+ }
+ const bookingId=Array.isArray(data)?(data[0]?.book_slot||data[0]?.booking_id||data[0]?.id):data;
+ const displayDate=new Date(bookingDate+"T00:00:00").toLocaleDateString("en-IN",{day:"2-digit",month:"long",year:"numeric"});
 
-  clearMessage();
+ document.getElementById("ackName").textContent=studentName;
+ document.getElementById("ackPrn").textContent=prn;
+ document.getElementById("ackMobile").textContent=mobile;
+ document.getElementById("ackYear").textContent=passingYear;
+ document.getElementById("ackDate").textContent=displayDate;
+ document.getElementById("ackTime").textContent=bookedSlotAtSubmit;
+ document.getElementById("ackId").textContent=bookingId||"Confirmed";
 
-  const studentName=
-    document.getElementById("studentName").value.trim();
-
-  const mobile=
-    document.getElementById("mobile").value.trim();
-
-  const prn=
-    document.getElementById("prn").value.trim();
-
-  const passingYear=
-    document.getElementById("passingYear").value.trim();
-
-  const bookingDate=dateInput.value;
-
-  if(!studentName || !mobile || !prn ||
-     !passingYear || !bookingDate || !selectedSlot){
-
-    showMessage("Please fill all details and select a slot.","error");
-    return;
-  }
-
-  if(!/^[0-9]{10}$/.test(mobile)){
-    showMessage("Please enter a valid 10 digit mobile number.","error");
-    return;
-  }
-
-  confirmBtn.disabled=true;
-  confirmBtn.textContent="Booking...";
-
-  const {data,error}=await supabaseClient
-    .rpc("book_slot",{
-      p_student_name:studentName,
-      p_mobile:mobile,
-      p_prn:prn,
-      p_passing_year:passingYear,
-      p_booking_date:bookingDate,
-      p_slot_time:selectedSlot
-    });
-
-  if(error){
-
-    console.error(error);
-
-    const errText=(error.message || "").toLowerCase();
-
-    if(errText.includes("unique") ||
-       errText.includes("duplicate") ||
-       errText.includes("slot")){
-
-      showMessage(
-        "This slot or PRN is already booked. Please select another slot.",
-        "error"
-      );
-
-    }else{
-
-      showMessage(
-        "Booking failed. Please check your details and try again.",
-        "error"
-      );
-    }
-
-    confirmBtn.disabled=false;
-    confirmBtn.textContent="Confirm Booking";
-    await loadSlots();
-    return;
-  }
-
-  const bookingId =
-    Array.isArray(data) ? data[0]?.book_slot : data;
-
-  showMessage(
-    "<b>Booking Successful! ✅</b><br><br>" +
-    "Booking ID: <b>"+bookingId+"</b><br>" +
-    "Date: "+bookingDate+"<br>" +
-    "Time: "+selectedSlot,
-    "success"
-  );
-
-  let waMobile=mobile;
-
-  if(waMobile.length===10){
-    waMobile="91"+waMobile;
-  }
-
-  const waText =
-    "ASPM COLLEGE OF PHARMACY - Document Collection Booking%0A%0A" +
-    "Student Name: "+encodeURIComponent(studentName)+"%0A" +
-    "PRN: "+encodeURIComponent(prn)+"%0A" +
-    "Date: "+bookingDate+"%0A" +
-    "Time: "+selectedSlot+"%0A" +
-    "Booking ID: "+encodeURIComponent(bookingId);
-
-  whatsappBtn.href="https://wa.me/"+waMobile+"?text="+waText;
-  whatsappBtn.style.display="block";
-
-  confirmBtn.textContent="Booking Completed";
-  selectedSlot=null;
-
-  await loadSlots();
-
+ let waMobile=mobile;if(waMobile.length===10)waMobile="91"+waMobile;
+ const waText=
+  "ASPM COLLEGE OF PHARMACY - Document Collection Booking\n\n"+
+  "BOOKING CONFIRMED\n"+
+  "Student Name: "+studentName+"\n"+
+  "PRN: "+prn+"\n"+
+  "Mobile: "+mobile+"\n"+
+  "Passing Year: "+passingYear+"\n"+
+  "Date: "+displayDate+"\n"+
+  "Time: "+bookedSlotAtSubmit+"\n"+
+  "Booking ID: "+(bookingId||"Confirmed");
+ whatsappBtn.href="https://wa.me/"+waMobile+"?text="+encodeURIComponent(waText);
+ acknowledgement.style.display="block";
+ acknowledgement.scrollIntoView({behavior:"smooth",block:"start"});
+ confirmBtn.textContent="Booking Completed";
+ selectedSlot=null;
+ await loadSlots();
 });
-
+printBtn.addEventListener("click",()=>window.print());
 renderSlots([]);
-
 </script>
-
 </body>
 </html>
