@@ -3,154 +3,919 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASPM College - Admin Login</title>
+
+<title>ASPM College - Admin Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#222}
-.header{background:#1557a6;color:white;padding:18px;text-align:center;font-size:22px;font-weight:bold}
-.container{max-width:1200px;margin:30px auto;padding:20px}
-.card{background:white;padding:25px;border-radius:12px;box-shadow:0 3px 15px rgba(0,0,0,.12)}
-input{padding:11px;width:100%;box-sizing:border-box;margin:7px 0 14px;border:1px solid #ccc;border-radius:6px}
-button{padding:11px 18px;border:0;border-radius:6px;cursor:pointer;font-weight:bold}
-.login-btn{background:#168c50;color:white;width:100%}
-.logout-btn{background:#d9534f;color:white;float:right}
-.download-btn{background:#1557a6;color:white;margin-bottom:15px}
-.message{margin-top:12px;font-weight:bold}.error{color:#c62828}.success{color:#168c50}.hidden{display:none}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;margin-top:15px}
-th,td{border:1px solid #ddd;padding:10px;text-align:left;white-space:nowrap}
-th{background:#1557a6;color:white}
-.filters{display:flex;gap:15px;align-items:end;margin-bottom:15px}
-.filters div{flex:1}.count{font-size:18px;font-weight:bold;margin:15px 0}
-@media(max-width:700px){.filters{display:block}}
-@media(max-width:800px){#summaryGrid{grid-template-columns:repeat(2,1fr)!important}}\n</style>
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f3f6fa;
+    color:#222;
+}
+
+.header{
+    background:#1557a6;
+    color:white;
+    padding:18px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.container{
+    max-width:1200px;
+    margin:30px auto;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 3px 15px rgba(0,0,0,.12);
+    margin-bottom:25px;
+}
+
+input{
+    padding:11px;
+    width:100%;
+    box-sizing:border-box;
+    margin:7px 0 14px;
+    border:1px solid #ccc;
+    border-radius:6px;
+}
+
+button{
+    padding:11px 18px;
+    border:0;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.login-btn{
+    background:#168c50;
+    color:white;
+    width:100%;
+}
+
+.logout-btn{
+    background:#d9534f;
+    color:white;
+    float:right;
+}
+
+.download-btn{
+    background:#1557a6;
+    color:white;
+    margin-bottom:15px;
+}
+
+.message{
+    margin-top:12px;
+    font-weight:bold;
+}
+
+.error{
+    color:#c62828;
+}
+
+.success{
+    color:#168c50;
+}
+
+.hidden{
+    display:none;
+}
+
+/* SUMMARY */
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:15px;
+    margin-top:20px;
+}
+
+.summary-card{
+    background:#f8fbff;
+    border:1px solid #d9e5f2;
+    border-radius:10px;
+    padding:18px;
+    text-align:center;
+}
+
+.summary-card h3{
+    margin:0 0 12px;
+    font-size:18px;
+    color:#1557a6;
+}
+
+.summary-big{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.summary-small{
+    font-size:15px;
+    font-weight:bold;
+}
+
+/* DASHBOARD */
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:left;
+    white-space:nowrap;
+}
+
+th{
+    background:#1557a6;
+    color:white;
+}
+
+.filters{
+    display:flex;
+    gap:15px;
+    align-items:end;
+    margin-bottom:15px;
+}
+
+.filters div{
+    flex:1;
+}
+
+.count{
+    font-size:18px;
+    font-weight:bold;
+    margin:15px 0;
+}
+
+@media(max-width:900px){
+
+    .summary-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:700px){
+
+    .filters{
+        display:block;
+    }
+
+    .summary-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
 </head>
+
 <body>
-<div class="header">ASPM COLLEGE OF PHARMACY<br>Admin Booking Dashboard</div>
+
+<div class="header">
+    ASPM COLLEGE OF PHARMACY
+    <br>
+    Admin Booking Dashboard
+</div>
+
 <div class="container">
 
+<!-- LOGIN -->
+
 <div id="loginBox" class="card">
-<h2>Admin Login</h2>
-<label>Email</label>
-<input type="email" id="email" placeholder="Admin Email">
-<label>Password</label>
-<input type="password" id="password" placeholder="Password">
-<button class="login-btn" onclick="login()">Login</button>
-<div id="loginMessage" class="message"></div>
-</div>
 
-<div id="dashboard" class="card hidden">
-<div id="summaryCard" class="card">
-  <h2>Booking Summary</h2>
-  <p><b>Booking dates: 07 September 2026 to 11 September 2026</b></p>
-  <div id="summaryGrid" class="summary-grid">
+    <h2>Admin Login</h2>
 
-  <div class="summary-card">
-    <h3>07 Sep 2026</h3>
-    <div class="summary-big" id="count07">0 / 10</div>
-    <div class="summary-small" id="avail07">Available: 10</div>
-  </div>
+    <label>Email</label>
 
-  <div class="summary-card">
-    <h3>08 Sep 2026</h3>
-    <div class="summary-big" id="count08">0 / 10</div>
-    <div class="summary-small" id="avail08">Available: 10</div>
-  </div>
+    <input
+        type="email"
+        id="email"
+        placeholder="Admin Email"
+    >
 
-  <div class="summary-card">
-    <h3>09 Sep 2026</h3>
-    <div class="summary-big" id="count09">0 / 10</div>
-    <div class="summary-small" id="avail09">Available: 10</div>
-  </div>
+    <label>Password</label>
 
-  <div class="summary-card">
-    <h3>10 Sep 2026</h3>
-    <div class="summary-big" id="count10">0 / 10</div>
-    <div class="summary-small" id="avail10">Available: 10</div>
-  </div>
+    <input
+        type="password"
+        id="password"
+        placeholder="Password"
+    >
 
-  <div class="summary-card">
-    <h3>11 Sep 2026</h3>
-    <div class="summary-big" id="count11">0 / 10</div>
-    <div class="summary-small" id="avail11">Available: 10</div>
-  </div>
+    <button
+        class="login-btn"
+        onclick="login()"
+    >
+        Login
+    </button>
+
+    <div
+        id="loginMessage"
+        class="message"
+    ></div>
 
 </div>
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="hidden">
+
+
+<!-- BOOKING SUMMARY -->
+
+<div class="card">
+
+    <h2>Booking Summary</h2>
+
+    <p>
+        <b>
+            Booking dates: 07 September 2026 to 11 September 2026
+        </b>
+    </p>
+
+    <div
+        id="summaryGrid"
+        class="summary-grid"
+    >
+
+        <div class="summary-card">
+            <h3>07 Sep 2026</h3>
+            <div
+                class="summary-big"
+                id="count07"
+            >
+                0 / 10
+            </div>
+            <div
+                class="summary-small"
+                id="avail07"
+            >
+                Available: 10
+            </div>
+        </div>
+
+
+        <div class="summary-card">
+            <h3>08 Sep 2026</h3>
+            <div
+                class="summary-big"
+                id="count08"
+            >
+                0 / 10
+            </div>
+            <div
+                class="summary-small"
+                id="avail08"
+            >
+                Available: 10
+            </div>
+        </div>
+
+
+        <div class="summary-card">
+            <h3>09 Sep 2026</h3>
+            <div
+                class="summary-big"
+                id="count09"
+            >
+                0 / 10
+            </div>
+            <div
+                class="summary-small"
+                id="avail09"
+            >
+                Available: 10
+            </div>
+        </div>
+
+
+        <div class="summary-card">
+            <h3>10 Sep 2026</h3>
+            <div
+                class="summary-big"
+                id="count10"
+            >
+                0 / 10
+            </div>
+            <div
+                class="summary-small"
+                id="avail10"
+            >
+                Available: 10
+            </div>
+        </div>
+
+
+        <div class="summary-card">
+            <h3>11 Sep 2026</h3>
+            <div
+                class="summary-big"
+                id="count11"
+            >
+                0 / 10
+            </div>
+            <div
+                class="summary-small"
+                id="avail11"
+            >
+                Available: 10
+            </div>
+        </div>
+
+    </div>
+
 </div>
 
-<button class="logout-btn" onclick="logout()">Logout</button>
-<h2>Booking Dashboard</h2>
-<div class="filters">
-<div><label>Select Date</label><input type="date" id="filterDate" min="2026-09-07" max="2026-09-11"></div>
-<div><button class="download-btn" onclick="loadBookings()">View Bookings</button></div>
-<div><button class="download-btn" onclick="downloadCSV()">Download CSV</button></div>
+
+<!-- BOOKING DASHBOARD -->
+
+<div class="card">
+
+    <button
+        class="logout-btn"
+        onclick="logout()"
+    >
+        Logout
+    </button>
+
+    <h2>Booking Dashboard</h2>
+
+
+    <div class="filters">
+
+        <div>
+
+            <label>Select Date</label>
+
+            <input
+                type="date"
+                id="filterDate"
+                min="2026-09-07"
+                max="2026-09-11"
+            >
+
+        </div>
+
+
+        <div>
+
+            <button
+                class="download-btn"
+                onclick="loadBookings()"
+            >
+                View Bookings
+            </button>
+
+        </div>
+
+
+        <div>
+
+            <button
+                class="download-btn"
+                onclick="downloadCSV()"
+            >
+                Download CSV
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="count"
+        id="bookingCount"
+    >
+        Total Bookings: 0
+    </div>
+
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Booking ID</th>
+                    <th>Student Name</th>
+                    <th>Mobile</th>
+                    <th>PRN / Seat No.</th>
+                    <th>Passing Year</th>
+                    <th>Booking Date</th>
+                    <th>Slot Time</th>
+                    <th>Created At</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="bookingTable">
+
+                <tr>
+                    <td colspan="8">
+                        No bookings found.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>
-<div class="count" id="bookingCount">Total Bookings: 0</div>
-<div class="table-wrap">
-<table>
-<thead><tr><th>Booking ID</th><th>Student Name</th><th>Mobile</th><th>PRN / Seat No.</th><th>Passing Year</th><th>Booking Date</th><th>Slot Time</th><th>Created At</th></tr></thead>
-<tbody id="bookingTable"></tbody>
-</table>
+
 </div>
+
 </div>
-</div>
+
 
 <script>
-const SUPABASE_URL="https://zhrtsnnxbwrdplehvobi.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_IKTxetJxdv-4qHEVID3FxQ_hMTJ7dP4";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let bookingsData=[];
+
+/* SUPABASE */
+
+const SUPABASE_URL =
+"https://zhrtsnnxbwrdplehvobi.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_IKTxetJxdv-4qHEVID3FxQ_hMTJ7dP4";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
+
+let bookingsData = [];
+
+
+/* BOOKING DATES */
+
+const bookingDates = [
+    "2026-09-07",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11"
+];
+
+
+/* LOGIN */
 
 async function login(){
- const email=document.getElementById("email").value.trim();
- const password=document.getElementById("password").value;
- const msg=document.getElementById("loginMessage");
- msg.className="message"; msg.textContent="Logging in...";
- const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
- if(error){msg.className="message error";msg.textContent=error.message;return}
- document.getElementById("loginBox").classList.add("hidden");
- document.getElementById("dashboard").classList.remove("hidden");
- document.getElementById("filterDate").value="2026-09-07";
- loadBookings();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const msg =
+        document.getElementById("loginMessage");
+
+    msg.className = "message";
+
+    msg.textContent = "Logging in...";
+
+
+    const {data,error} =
+        await supabaseClient.auth.signInWithPassword({
+            email:email,
+            password:password
+        });
+
+
+    if(error){
+
+        msg.className = "message error";
+
+        msg.textContent = error.message;
+
+        return;
+    }
+
+
+    document
+        .getElementById("loginBox")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("dashboard")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("filterDate")
+        .value = "2026-09-07";
+
+
+    await loadBookings();
+
+    await loadSummary();
+
 }
+
+
+/* SUMMARY */
+
+async function loadSummary(){
+
+    const {data,error} =
+        await supabaseClient
+            .from("bookings")
+            .select("booking_date");
+
+
+    if(error){
+
+        console.error(
+            "Summary Error:",
+            error
+        );
+
+        return;
+    }
+
+
+    const rows = data || [];
+
+
+    /* 07 SEP */
+
+    const count07 =
+        rows.filter(
+            r => r.booking_date === "2026-09-07"
+        ).length;
+
+    document.getElementById("count07")
+        .textContent = count07 + " / 10";
+
+    document.getElementById("avail07")
+        .textContent =
+        count07 >= 10
+        ? "FULL"
+        : "Available: " + (10-count07);
+
+
+    /* 08 SEP */
+
+    const count08 =
+        rows.filter(
+            r => r.booking_date === "2026-09-08"
+        ).length;
+
+    document.getElementById("count08")
+        .textContent = count08 + " / 10";
+
+    document.getElementById("avail08")
+        .textContent =
+        count08 >= 10
+        ? "FULL"
+        : "Available: " + (10-count08);
+
+
+    /* 09 SEP */
+
+    const count09 =
+        rows.filter(
+            r => r.booking_date === "2026-09-09"
+        ).length;
+
+    document.getElementById("count09")
+        .textContent = count09 + " / 10";
+
+    document.getElementById("avail09")
+        .textContent =
+        count09 >= 10
+        ? "FULL"
+        : "Available: " + (10-count09);
+
+
+    /* 10 SEP */
+
+    const count10 =
+        rows.filter(
+            r => r.booking_date === "2026-09-10"
+        ).length;
+
+    document.getElementById("count10")
+        .textContent = count10 + " / 10";
+
+    document.getElementById("avail10")
+        .textContent =
+        count10 >= 10
+        ? "FULL"
+        : "Available: " + (10-count10);
+
+
+    /* 11 SEP */
+
+    const count11 =
+        rows.filter(
+            r => r.booking_date === "2026-09-11"
+        ).length;
+
+    document.getElementById("count11")
+        .textContent = count11 + " / 10";
+
+    document.getElementById("avail11")
+        .textContent =
+        count11 >= 10
+        ? "FULL"
+        : "Available: " + (10-count11);
+
+}
+
+
+/* LOAD BOOKINGS */
 
 async function loadBookings(){
- const date=document.getElementById("filterDate").value;
- const table=document.getElementById("bookingTable");
- table.innerHTML="<tr><td colspan='8'>Loading...</td></tr>";
- let query=supabaseClient.from("bookings").select("*").order("booking_date",{ascending:true}).order("slot_time",{ascending:true});
- if(date) query=query.eq("booking_date",date);
- const {data,error}=await query;
- if(error){table.innerHTML="<tr><td colspan='8'>Error: "+escapeHTML(error.message)+"</td></tr>";return}
- bookingsData=data||[];
- document.getElementById("bookingCount").textContent="Total Bookings: "+bookingsData.length;
- if(!bookingsData.length){table.innerHTML="<tr><td colspan='8'>No bookings found.</td></tr>";return}
- table.innerHTML="";
- bookingsData.forEach(row=>{
-  const tr=document.createElement("tr");
-  tr.innerHTML=`<td>${escapeHTML(row.booking_id||"")}</td><td>${escapeHTML(row.student_name||"")}</td><td>${escapeHTML(row.mobile||"")}</td><td>${escapeHTML(row.prn||"")}</td><td>${escapeHTML(row.passing_year||"")}</td><td>${escapeHTML(row.booking_date||"")}</td><td>${escapeHTML(formatTime(row.slot_time||""))}</td><td>${escapeHTML(row.created_at||"")}</td>`;
-  table.appendChild(tr);
- });
+
+    const date =
+        document.getElementById("filterDate").value;
+
+
+    const table =
+        document.getElementById("bookingTable");
+
+
+    table.innerHTML =
+        "<tr><td colspan='8'>Loading...</td></tr>";
+
+
+    let query =
+        supabaseClient
+            .from("bookings")
+            .select("*")
+            .order(
+                "booking_date",
+                {ascending:true}
+            )
+            .order(
+                "slot_time",
+                {ascending:true}
+            );
+
+
+    if(date){
+
+        query =
+            query.eq(
+                "booking_date",
+                date
+            );
+
+    }
+
+
+    const {data,error} =
+        await query;
+
+
+    if(error){
+
+        table.innerHTML =
+            "<tr><td colspan='8'>Error: "
+            +
+            escapeHTML(error.message)
+            +
+            "</td></tr>";
+
+        return;
+    }
+
+
+    bookingsData =
+        data || [];
+
+
+    document
+        .getElementById("bookingCount")
+        .textContent =
+        "Total Bookings: "
+        +
+        bookingsData.length;
+
+
+    if(!bookingsData.length){
+
+        table.innerHTML =
+            "<tr><td colspan='8'>No bookings found.</td></tr>";
+
+        return;
+    }
+
+
+    table.innerHTML = "";
+
+
+    bookingsData.forEach(row => {
+
+        const tr =
+            document.createElement("tr");
+
+
+        tr.innerHTML =
+
+        `<td>${escapeHTML(row.booking_id || "")}</td>
+
+        <td>${escapeHTML(row.student_name || "")}</td>
+
+        <td>${escapeHTML(row.mobile || "")}</td>
+
+        <td>${escapeHTML(row.prn || "")}</td>
+
+        <td>${escapeHTML(row.passing_year || "")}</td>
+
+        <td>${escapeHTML(row.booking_date || "")}</td>
+
+        <td>${escapeHTML(formatTime(row.slot_time || ""))}</td>
+
+        <td>${escapeHTML(row.created_at || "")}</td>`;
+
+
+        table.appendChild(tr);
+
+    });
+
 }
+
+
+/* CSV DOWNLOAD */
 
 function downloadCSV(){
- if(!bookingsData.length){alert("No bookings available to download.");return}
- const headers=["Booking ID","Student Name","Mobile","PRN / Seat Number","Passing Year","Booking Date","Slot Time","Created At"];
- const rows=bookingsData.map(row=>[row.booking_id||"",row.student_name||"",row.mobile||"",row.prn||"",row.passing_year||"",row.booking_date||"",formatTime(row.slot_time||""),row.created_at||""]);
- const csv=[headers,...rows].map(row=>row.map(value=>'"'+String(value).replace(/"/g,'""')+'"').join(",")).join("\n");
- const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
- const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url;
- const date=document.getElementById("filterDate").value||"all"; a.download="ASPM_Bookings_"+date+".csv"; a.click(); URL.revokeObjectURL(url);
+
+    if(!bookingsData.length){
+
+        alert(
+            "No bookings available to download."
+        );
+
+        return;
+    }
+
+
+    const headers = [
+
+        "Booking ID",
+        "Student Name",
+        "Mobile",
+        "PRN / Seat Number",
+        "Passing Year",
+        "Booking Date",
+        "Slot Time",
+        "Created At"
+
+    ];
+
+
+    const rows =
+        bookingsData.map(row => [
+
+            row.booking_id || "",
+            row.student_name || "",
+            row.mobile || "",
+            row.prn || "",
+            row.passing_year || "",
+            row.booking_date || "",
+            formatTime(row.slot_time || ""),
+            row.created_at || ""
+
+        ]);
+
+
+    const csv =
+        [headers,...rows]
+        .map(row =>
+            row
+            .map(value =>
+                '"' +
+                String(value)
+                .replace(/"/g,'""')
+                +
+                '"'
+            )
+            .join(",")
+        )
+        .join("\n");
+
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:"text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const a =
+        document.createElement("a");
+
+
+    a.href = url;
+
+
+    const date =
+        document.getElementById(
+            "filterDate"
+        ).value || "all";
+
+
+    a.download =
+        "ASPM_Bookings_" +
+        date +
+        ".csv";
+
+
+    a.click();
+
+
+    URL.revokeObjectURL(url);
+
 }
 
+
+/* LOGOUT */
+
 async function logout(){
- await supabaseClient.auth.signOut();
- document.getElementById("dashboard").classList.add("hidden");
- document.getElementById("loginBox").classList.remove("hidden");
- document.getElementById("password").value="";
+
+    await supabaseClient.auth.signOut();
+
+
+    document
+        .getElementById("dashboard")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("loginBox")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("password")
+        .value = "";
+
 }
-function formatTime(time){return time?time.substring(0,5):""}
-function escapeHTML(value){return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+
+
+/* FORMAT TIME */
+
+function formatTime(time){
+
+    return time
+        ? time.substring(0,5)
+        : "";
+
+}
+
+
+/* SECURITY */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
 </script>
+
 </body>
 </html>
