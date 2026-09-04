@@ -265,13 +265,13 @@ th{
                 class="summary-big"
                 id="count07"
             >
-                0 / 10
+                0 / 6
             </div>
             <div
                 class="summary-small"
                 id="avail07"
             >
-                Available: 10
+                Available: 6
             </div>
         </div>
 
@@ -282,13 +282,13 @@ th{
                 class="summary-big"
                 id="count08"
             >
-                0 / 10
+                0 / 6
             </div>
             <div
                 class="summary-small"
                 id="avail08"
             >
-                Available: 10
+                Available: 6
             </div>
         </div>
 
@@ -299,13 +299,13 @@ th{
                 class="summary-big"
                 id="count09"
             >
-                0 / 10
+                0 / 6
             </div>
             <div
                 class="summary-small"
                 id="avail09"
             >
-                Available: 10
+                Available: 6
             </div>
         </div>
 
@@ -575,13 +575,13 @@ async function loadSummary(){
         ).length;
 
     document.getElementById("count07")
-        .textContent = count07 + " / 10";
+        .textContent = count07 + " / 6";
 
     document.getElementById("avail07")
         .textContent =
-        count07 >= 10
+        count07 >= 6
         ? "FULL"
-        : "Available: " + (10-count07);
+        : "Available: " + (6-count07);
 
 
     /* 08 SEP */
@@ -592,13 +592,13 @@ async function loadSummary(){
         ).length;
 
     document.getElementById("count08")
-        .textContent = count08 + " / 10";
+        .textContent = count08 + " / 6";
 
     document.getElementById("avail08")
         .textContent =
-        count08 >= 10
+        count08 >= 6
         ? "FULL"
-        : "Available: " + (10-count08);
+        : "Available: " + (6-count08);
 
 
     /* 09 SEP */
@@ -609,13 +609,13 @@ async function loadSummary(){
         ).length;
 
     document.getElementById("count09")
-        .textContent = count09 + " / 10";
+        .textContent = count09 + " / 6";
 
     document.getElementById("avail09")
         .textContent =
-        count09 >= 10
+        count09 >= 6
         ? "FULL"
-        : "Available: " + (10-count09);
+        : "Available: " + (6-count09);
 
 
     /* 10 SEP */
